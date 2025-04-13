@@ -1,21 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import words from './words.json';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+function MyVerticallyCenteredModal(props) {
+  return (
+    <Modal
+      {...props}
+      aria-labelledby="contained-modal-title-vcenter"
+      >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          {props.title}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>        
+        <p>{props.message}</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Play Again</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 
 function App() {
-  const [secretWord, setSecretWord] = useState('');
-  const [guess, setGuess] = useState('');
+    const handleInputChange = (rowIndex, index, event) => {
+      const value = event.target.value.toUpperCase();
+      const newGuessRows = [...guessRows];
+      newGuessRows[rowIndex].guess[index] = value;
+      setGuessRows(newGuessRows);
+
+      if (value === '') {
+        const prevInput = document.querySelector(`input[name=letter-${rowIndex}-${index - 1}]`);
+        if (prevInput) prevInput.focus();
+      } else if (index < 4) {
+        const nextInput = document.querySelector(`input[name=letter-${rowIndex}-${index + 1}]`);
+        if (nextInput) nextInput.focus();
+      }
+    };
+
+  const [secretWord, setSecretWord] = useState('');  
   const [gameOver, setGameOver] = useState(false);
   const initialGuessRows = Array(5).fill(null).map(() => ({
     guess: ['', '', '', '', ''],
     feedback: ['', '', '', '', '']
   }));
-  const [modalContent, setModalContent] = useState(null);
+  
   const [guessRows, setGuessRows] = useState(initialGuessRows); // 5 rows of guesses
-  const resetGame = () => {    
+  const [modalShow, setModalShow] = React.useState(false);
+  const [modalContent, setModalContent] = useState({ title: "", message: "" });
+
+  const resetGame = () => {
     setGuessRows(initialGuessRows);
     setGameOver(false);
-  };
+    setModalShow(false);    
+    setModalContent({ title: "", message: "" });
+    };
 
   useEffect(() => {
     fetchSecretWord();
@@ -26,28 +69,6 @@ function App() {
     setSecretWord(words.words[randomIndex]);
   };
 
-
-    const handleInputChange = (rowIndex, index, event) => {
-    const value = event.target.value.toUpperCase();
-    const newGuessRows = [...guessRows];
-
-    newGuessRows[rowIndex].guess[index] = value.length <= 1 ? value.toUpperCase() : newGuessRows[rowIndex].guess[index]; // Update the current cell
-    setGuessRows(newGuessRows);
-
-    // Move focus to the next input if a value is entered and it's not the last input
-    if (value.length <= 1 && value && index < 4) {
-      const nextInput = document.querySelector(`input[name=letter-${rowIndex}-${index + 1}]`);
-      if (nextInput) {
-        nextInput.focus();
-      }
-    }
-
-    // Handle backspace: Clear the current cell and move to the previous one
-    if (event.nativeEvent.inputType === 'deleteContentBackward' && index > 0) {
-      const prevInput = document.querySelector(`input[name=letter-${rowIndex}-${index - 1}]`);
-      if (prevInput) prevInput.focus();
-    }
-  };
 
   const startNewGame = () => {
     fetchSecretWord();
@@ -89,25 +110,23 @@ function App() {
   
       newGuessRows[currentRow].feedback = newFeedback;
   
-        const isWon = guessArray.join('') === secretWord;
-        const isLastRow = currentRow === 4;
+      const isWon = guessArray.join('') === secretWord;
         const animationDelay = 5 * 0.2 * 1000; // Assuming each flip takes 0.2s
     
         if (isWon) {
-          setTimeout(() => {
-            setModalContent({
-              title: "Congratulations!",
-              message: `You guessed the word: ${secretWord} in ${currentRow + 1} tries.`,
-              secretWord: secretWord,
-            });
-          }, animationDelay);
-          setGameOver(true);
-        } else if (isLastRow) {
-          setTimeout(() => {
-            setModalContent({ title: "Game Over!", message: `The word was: ${secretWord}.`, secretWord: secretWord });
-          }, animationDelay);
-          setGameOver(true);
-        } else {
+          setTimeout(() => {            
+            setModalContent({ title: "Congratulations!", message: `You guessed the word: ${secretWord} in ${currentRow + 1} tries.` });            
+            setGameOver(true);            
+            setModalShow(true);
+          }, animationDelay);          
+        } else if (currentRow === 4) {          
+            setTimeout(() => {                          
+              setModalContent({ title: "Game Over!", message: `The word was: ${secretWord}.` });              
+              setGameOver(true);              
+              setModalShow(true);
+            }, animationDelay);                      
+        }
+         else {
           const nextInput = document.querySelector(`input[name=letter-${currentRow + 1}-0]`);      
           
     
@@ -120,27 +139,10 @@ function App() {
   
     };
 
-    const ResultModal = ({ isOpen, onClose, title, message, secretWord }) => {
-      if (!isOpen) return null;
-    
-      return (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>{title}</h2>
-            
-            {message && (
-            <p>{message}</p>
-            )}
-            
-            <button onClick={onClose}>Play Again</button>
-          </div>
-        </div>
-      );
-    };
+   
     
     const handleNewGameClick = () => {
-        startNewGame();
-      setModalContent(null);
+        startNewGame();      
     };
   
     const isRowReadOnly = (row, rowIdx) => {  
@@ -175,10 +177,13 @@ function App() {
       {guessRows.findIndex(row => row.feedback.every(fb => fb === '')) !== -1 && (
         <button type="button" onClick={handleSubmit} disabled={!isGuessValid(guessRows[guessRows.findIndex(row => row.feedback.every(fb => fb === ''))].guess)}>Guess</button>
       )}
-      {modalContent && (
-        <ResultModal isOpen={gameOver} onClose={handleNewGameClick} title={modalContent.title} message={modalContent.message} secretWord={modalContent.secretWord}/>
-
-      )}
+      
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => {resetGame(); }}
+        title={modalContent.title}
+        message={modalContent.message}        
+      />
 
     </div>
   );
