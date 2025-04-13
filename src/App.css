@@ -1,0 +1,112 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.game-board {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr); /* 6 rows for guesses */
+  align-items: center;
+  grid-gap: 10px;
+}
+.input-grid {
+  display: flex;
+  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  perspective: 500px; /* Needed for 3D animation */
+}
+.letter-box {
+    width: 60px;
+  height: 60px;
+  border: 2px solid #000;
+  font-size: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 60px;
+  color: black;
+  background-color: white;
+    border-radius: 5px; /* Add rounded corners */
+    position: relative;
+    transform-style: preserve-3d; /* Needed for 3D animation */
+    transition: transform 0.5s, background-color 0.3s; /* Add background-color transition */
+}
+.letter-box.correct {
+    background-color: #6aaa64;
+}
+.letter-box.present {
+    background-color: #c9b458;
+}
+.letter-box.absent {
+    background-color: #787c7e;
+}
+
+.game-over {
+  font-size: 1.2rem;
+}
+
+.letter-box.flipped {
+    transform: rotateX(90deg);
+    opacity: 0;
+}
+
+.letter-box::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+button[type="submit"] {
+  padding: 10px 20px;
+  font-size: 1.2rem;
