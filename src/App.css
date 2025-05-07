@@ -99,3 +99,117 @@ button[type="submit"] {
   padding: 10px 20px;
   font-size: 1.2rem;
 }
+
+/* Virtual Keyboard Styles */
+.virtual-keyboard {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.keyboard-key {
+  background-color: #d3d6da;
+  border: none;
+  border-radius: 4px;
+  color: #1a1a1b;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 0 2px;
+  min-width: 30px;
+  height: 45px;
+  padding: 0 8px;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+.keyboard-key:hover {
+  background-color: #bbbec2;
+}
+
+.key-enter, .key-backspace {
+  min-width: 65px;
+  font-size: 12px;
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 768px) {
+  .App {
+    padding-top: 10px;
+    justify-content: flex-start; /* Change from center to flex-start */
+    min-height: 100vh;
+    overflow: hidden; /* Prevent scrolling */
+  }
+  
+  .title {
+    font-size: 24px;
+    margin: 5px 0 15px 0; /* Reduce top margin */
+  }
+  
+  .game-board {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .letter-box {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    margin: 3px;
+  }
+  
+  .keyboard-key {
+    min-width: 25px;
+    height: 40px;
+    font-size: 14px;
+  }
+  
+  .key-enter, .key-backspace {
+    min-width: 50px;
+    font-size: 11px;
+  }
+  
+  .button {
+    padding: 8px 16px;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  /* Modal adjustments for mobile */
+  .modal-dialog {
+    margin: 10px;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 320px) {
+  .letter-box {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+    margin: 2px;
+  }
+  
+  .keyboard-key {
+    min-width: 20px;
+    height: 35px;
+    font-size: 12px;
+    padding: 0 4px;
+  }
+  
+  .key-enter, .key-backspace {
+    min-width: 40px;
+    font-size: 10px;
+  }
+}

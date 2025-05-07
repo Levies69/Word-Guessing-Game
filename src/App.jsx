@@ -167,6 +167,79 @@ function App() {
         
     }
 
+  const [activeInput, setActiveInput] = useState({ row: 0, col: 0 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect if user is on mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  const handleInputFocus = (rowIndex, index) => {
+    setActiveInput({ row: rowIndex, col: index });
+  };
+
+  const handleVirtualKeyPress = (key) => {
+    const { row, col } = activeInput;
+    
+    // Check if we're on an active row
+    const currentRowIndex = guessRows.findIndex(row => row.feedback.every(fb => fb === ''));
+    if (row !== currentRowIndex || gameOver) return;
+    
+    if (key === 'BACKSPACE') {
+      // Handle backspace
+      if (guessRows[row].guess[col] !== '') {
+        // If current position has a letter, delete it
+        const newGuessRows = [...guessRows];
+        newGuessRows[row].guess[col] = '';
+        setGuessRows(newGuessRows);
+      } else if (col > 0) {
+        // Move to previous position and delete that letter
+        const newGuessRows = [...guessRows];
+        newGuessRows[row].guess[col - 1] = '';
+        setGuessRows(newGuessRows);
+        setActiveInput({ row, col: col - 1 });
+        // Focus the previous input
+        const prevInput = document.querySelector(`input[name=letter-${row}-${col - 1}]`);
+        if (prevInput) prevInput.focus();
+      }
+    } else if (key === 'ENTER') {
+      // Handle enter key
+      handleSubmit(new Event('submit'));
+    } else {
+      // Handle letter keys
+      if (col < 5) {
+        const newGuessRows = [...guessRows];
+        newGuessRows[row].guess[col] = key;
+        setGuessRows(newGuessRows);
+        
+        // Move to next position if not at the end
+        if (col < 4) {
+          setActiveInput({ row, col: col + 1 });
+          // Focus the next input
+          const nextInput = document.querySelector(`input[name=letter-${row}-${col + 1}]`);
+          if (nextInput) nextInput.focus();
+        }
+      }
+    }
+  };
+
+  // Virtual keyboard layout
+  const keyboardRows = [
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE']
+  ];
+
   return (
     <div className="App">
       <h1 className='title'>Word Guessing Game</h1>
@@ -185,6 +258,7 @@ function App() {
                 if (e.key === 'Enter') handleSubmit(e);
                 handleKeyDown(rowIdx, index, e);
               }}
+              onFocus={() => handleInputFocus(rowIdx, index)}
               className={`letter-box ${row.feedback[index] || ''}`} // Use the feedback class
               name={`letter-${rowIdx}-${index}`}
               readOnly={isRowReadOnly(row, rowIdx) || gameOver}
@@ -193,8 +267,27 @@ function App() {
           </div>
         ))}
       </div>
+      
       {guessRows.findIndex(row => row.feedback.every(fb => fb === '')) !== -1 && (
         <button className="button" type="button" onClick={handleSubmit} disabled={!isGuessValid(guessRows[guessRows.findIndex(row => row.feedback.every(fb => fb === ''))].guess)}>Guess</button>
+      )}
+      
+      {isMobile && (
+        <div className="virtual-keyboard">
+          {keyboardRows.map((row, rowIndex) => (
+            <div key={rowIndex} className="keyboard-row">
+              {row.map((key) => (
+                <button
+                  key={key}
+                  className={`keyboard-key ${key === 'ENTER' ? 'key-enter' : ''} ${key === 'BACKSPACE' ? 'key-backspace' : ''}`}
+                  onClick={() => handleVirtualKeyPress(key)}
+                >
+                  {key === 'BACKSPACE' ? '⌫' : key}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
       )}
       
       <MyVerticallyCenteredModal
@@ -203,7 +296,6 @@ function App() {
         title={modalContent.title}
         message={modalContent.message}        
       />
-
     </div>
   );
 }
