@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: 'Arial', sans-serif; /* Change from Arial to a more modern font */
 }
 
 .game-board {
@@ -107,36 +107,44 @@ button[type="submit"] {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  font-family: 'Arial', sans-serif;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .keyboard-key {
   background-color: #d3d6da;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   color: #1a1a1b;
   cursor: pointer;
   font-weight: bold;
   margin: 0 2px;
-  min-width: 30px;
-  height: 45px;
-  padding: 0 8px;
+  min-width: 38px; /* Adjusted width */
+  height: 50px; /* Reduced height */
+  padding: 0 6px;
   text-transform: uppercase;
   transition: background-color 0.2s;
+  font-family: 'Arial', sans-serif;
+  font-size: 16px; /* Slightly reduced font size */
 }
 
 .keyboard-key:hover {
   background-color: #bbbec2;
 }
 
-.key-enter, .key-backspace {
-  min-width: 65px;
-  font-size: 12px;
+.keyboard-key:active {
+  background-color: #878a8c;
+  transform: scale(0.95);
+}
+
+.key-backspace {
+  min-width: 65px; /* Adjusted width */
+  font-size: 14px;
 }
 
 /* Responsive styles for mobile devices */
@@ -146,6 +154,7 @@ button[type="submit"] {
     justify-content: flex-start; /* Change from center to flex-start */
     min-height: 100vh;
     overflow: hidden; /* Prevent scrolling */
+    font-family: 'Arial', sans-serif; /* Change from Arial to a more modern font */
   }
   
   .title {
@@ -166,14 +175,15 @@ button[type="submit"] {
   }
   
   .keyboard-key {
-    min-width: 25px;
-    height: 40px;
-    font-size: 14px;
+    min-width: 32px; /* Adjusted width */
+    height: 48px; /* Adjusted height */
+    font-size: 16px;
+    margin: 0 2px;
   }
   
-  .key-enter, .key-backspace {
-    min-width: 50px;
-    font-size: 11px;
+  .key-backspace {
+    min-width: 60px; /* Adjusted width */
+    font-size: 14px;
   }
   
   .button {
@@ -202,14 +212,14 @@ button[type="submit"] {
   }
   
   .keyboard-key {
-    min-width: 20px;
-    height: 35px;
-    font-size: 12px;
-    padding: 0 4px;
+    min-width: 26px; /* Adjusted width */
+    height: 40px;
+    font-size: 14px;
+    padding: 0 2px;
   }
   
-  .key-enter, .key-backspace {
-    min-width: 40px;
-    font-size: 10px;
+  .key-backspace {
+    min-width: 50px; /* Adjusted width */
+    font-size: 12px;
   }
 }

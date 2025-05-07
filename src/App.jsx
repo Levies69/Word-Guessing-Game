@@ -74,7 +74,15 @@ function App() {
     setModalShow(false);    
     setModalContent({ title: "", message: "" });
     fetchSecretWord(); // Add this line to generate a new secret word
-    };
+    
+    // Add this to focus the first input after a short delay
+    setTimeout(() => {
+      const firstInput = document.querySelector('input[name=letter-0-0]');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100); // Short delay to ensure DOM is updated
+  };
 
   useEffect(() => {
     fetchSecretWord();
@@ -127,31 +135,36 @@ function App() {
       newGuessRows[currentRow].feedback = newFeedback;
   
       const isWon = guessArray.join('') === secretWord;
-        const animationDelay = 5 * 0.3 * 1000; // Assuming each flip takes 0.2s
-    
-        if (isWon) {
-          setTimeout(() => {            
-            setModalContent({ title: "Congratulations!", message: `You guessed the word: ${secretWord} in ${currentRow + 1} tries.` });            
-            setGameOver(true);            
+      const animationDelay = 5 * 0.3 * 1000;
+  
+      if (isWon) {
+        // Longer vibration for winning
+        vibrateDevice(200);
+        setTimeout(() => {            
+          setModalContent({ title: "Congratulations!", message: `You guessed the word: ${secretWord} in ${currentRow + 1} tries.` });            
+          setGameOver(true);            
+          setModalShow(true);
+        }, animationDelay);          
+      } else if (currentRow === 4) {          
+          setTimeout(() => {                          
+            setModalContent({ title: "Game Over!", message: `The word was: ${secretWord}.` });              
+            setGameOver(true);              
             setModalShow(true);
-          }, animationDelay);          
-        } else if (currentRow === 4) {          
-            setTimeout(() => {                          
-              setModalContent({ title: "Game Over!", message: `The word was: ${secretWord}.` });              
-              setGameOver(true);              
-              setModalShow(true);
-            }, animationDelay);                      
-        }
-         else {
-          const nextInput = document.querySelector(`input[name=letter-${currentRow + 1}-0]`);      
-          
+          }, animationDelay);                      
+      }
+       else {
+        const nextInput = document.querySelector(`input[name=letter-${currentRow + 1}-0]`);      
+        
     
-          if (nextInput) {
-            setTimeout(() => { nextInput.focus(); }, 0);
-          }
-          
+        if (nextInput) {
+          setTimeout(() => { nextInput.focus(); }, 0);
         }
-        setGuessRows(newGuessRows);
+        
+        // Medium vibration for game over
+        vibrateDevice(150);
+        
+      }
+      setGuessRows(newGuessRows);
   
     };
 
@@ -166,6 +179,13 @@ function App() {
       return rowIdx !== currentRowIndex && row.feedback.every(fb => fb === '');
         
     }
+
+  // Add this after the isRowReadOnly function
+  const vibrateDevice = (duration = 50) => {
+    if (navigator.vibrate && isMobile) {
+      navigator.vibrate(duration);
+    }
+  };
 
   const [activeInput, setActiveInput] = useState({ row: 0, col: 0 });
   const [isMobile, setIsMobile] = useState(false);
@@ -189,6 +209,8 @@ function App() {
   };
 
   const handleVirtualKeyPress = (key) => {
+    // Add vibration when any key is pressed
+    vibrateDevice(50);
     const { row, col } = activeInput;
     
     // Check if we're on an active row
@@ -233,11 +255,11 @@ function App() {
     }
   };
 
-  // Virtual keyboard layout
+  // Virtual keyboard layout - remove ENTER from the third row
   const keyboardRows = [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE']
+    ['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'] // Removed ENTER
   ];
 
   return (
@@ -261,7 +283,8 @@ function App() {
               onFocus={() => handleInputFocus(rowIdx, index)}
               className={`letter-box ${row.feedback[index] || ''}`} // Use the feedback class
               name={`letter-${rowIdx}-${index}`}
-              readOnly={isRowReadOnly(row, rowIdx) || gameOver}
+              readOnly={isMobile || isRowReadOnly(row, rowIdx) || gameOver}
+              inputMode={isMobile ? "none" : "text"}
             />
           ))}
           </div>
