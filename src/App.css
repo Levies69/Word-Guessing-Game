@@ -1,36 +1,10 @@
 #root {
-  max-width: 1280px;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+  background-color: #393a3b;
 }
 
 .card {
@@ -38,7 +12,7 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: #cfcdcd;
 }
 
 .App {
@@ -88,7 +62,21 @@
 .letter-box.absent {
     background-color: #787c7e;
 }
-
+.title{
+  font-size: 3rem;
+  font-family: 'Tahoma';
+  margin-bottom: 3rem;
+  color:white;
+}
+.button{
+  color:black;
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  margin-top: 20px;
+  cursor: pointer;
+}
 .game-over {
   font-size: 1.2rem;
 }

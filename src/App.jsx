@@ -42,6 +42,21 @@ function App() {
       }
     };
 
+    const handleKeyDown = (rowIndex, index, event) => {
+      // Handle backspace key
+      if (event.key === 'Backspace' && guessRows[rowIndex].guess[index] === '') {
+        // If current input is empty and backspace is pressed, move to previous input
+        const prevInput = document.querySelector(`input[name=letter-${rowIndex}-${index - 1}]`);
+        if (prevInput) {
+          prevInput.focus();
+          // Clear the previous input's value
+          const newGuessRows = [...guessRows];
+          newGuessRows[rowIndex].guess[index - 1] = '';
+          setGuessRows(newGuessRows);
+        }
+      }
+    };
+
   const [secretWord, setSecretWord] = useState('');  
   const [gameOver, setGameOver] = useState(false);
   const initialGuessRows = Array(5).fill(null).map(() => ({
@@ -58,6 +73,7 @@ function App() {
     setGameOver(false);
     setModalShow(false);    
     setModalContent({ title: "", message: "" });
+    fetchSecretWord(); // Add this line to generate a new secret word
     };
 
   useEffect(() => {
@@ -111,7 +127,7 @@ function App() {
       newGuessRows[currentRow].feedback = newFeedback;
   
       const isWon = guessArray.join('') === secretWord;
-        const animationDelay = 5 * 0.2 * 1000; // Assuming each flip takes 0.2s
+        const animationDelay = 5 * 0.3 * 1000; // Assuming each flip takes 0.2s
     
         if (isWon) {
           setTimeout(() => {            
@@ -153,7 +169,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Word Guessing Game</h1>
+      <h1 className='title'>Word Guessing Game</h1>
       <div className="game-board">
         {guessRows.map((row, rowIdx) => (
           <div key={rowIdx} className="guess-row">
@@ -165,17 +181,20 @@ function App() {
               size="1"
               value={letter}
               onChange={(e) => handleInputChange(rowIdx, index, e)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSubmit(e);
+                handleKeyDown(rowIdx, index, e);
+              }}
               className={`letter-box ${row.feedback[index] || ''}`} // Use the feedback class
               name={`letter-${rowIdx}-${index}`}
               readOnly={isRowReadOnly(row, rowIdx) || gameOver}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSubmit(e); }}
             />
           ))}
           </div>
         ))}
       </div>
       {guessRows.findIndex(row => row.feedback.every(fb => fb === '')) !== -1 && (
-        <button type="button" onClick={handleSubmit} disabled={!isGuessValid(guessRows[guessRows.findIndex(row => row.feedback.every(fb => fb === ''))].guess)}>Guess</button>
+        <button className="button" type="button" onClick={handleSubmit} disabled={!isGuessValid(guessRows[guessRows.findIndex(row => row.feedback.every(fb => fb === ''))].guess)}>Guess</button>
       )}
       
       <MyVerticallyCenteredModal
